@@ -26,6 +26,7 @@ APP_TOKEN = os.getenv("FEISHU_APP_TOKEN", "JXvwbEeuJakLvqs0f1IconpJnKx")
 PLATFORM_TABLE_MAP = {
     "xhs": "tblWwZpjhpUowxQ6",
     "dy": "tbl2ofGnYLyrKNtn",
+    "tieba": "tbl5YzjVKkSIrg4Z",
     "bili": "tblTrWXPa3ZNexvN",
 }
 
@@ -262,7 +263,8 @@ class FeishuStore(AbstractStore):
         构建评论的飞书记录字段
         匹配当前飞书表结构
         """
-        content = comment_item.get("content", "")
+        # 兼容 tieba 字段命名
+        content = comment_item.get("content", "") or comment_item.get("desc", "")
         fields = {
             "帖子地址": comment_item.get("note_url", ""),
             "帖子标题": comment_item.get("note_title", ""),

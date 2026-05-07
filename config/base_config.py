@@ -17,6 +17,8 @@
 # 详细许可条款请参阅项目根目录下的LICENSE文件。
 # 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
 
+import os
+
 # Basic configuration
 PLATFORM = "xhs"  # Platform, xhs | dy | ks | bili | wb | tieba | zhihu
 
@@ -139,16 +141,18 @@ CRAWLER_MIN_SLEEP_SEC = 1
 DISABLE_SSL_VERIFY = False
 
 # ==================== 飞书输出配置 ====================
-# 飞书相关配置从环境变量读取，不需要写在配置文件里
-FEISHU_ENABLED = True
-FEISHU_APP_ID = "cli_a957745288229cb3"
-FEISHU_APP_SECRET = "sWXQmWm1vv3HoiZk4kRURcEeqTBPBqes"
-FEISHU_APP_TOKEN = "JXvwbEeuJakLvqs0f1IconpJnKx"
+# 飞书相关配置从环境变量读取，不写死在代码里
+# 环境变量: FEISHU_APP_ID, FEISHU_APP_SECRET, FEISHU_APP_TOKEN
+FEISHU_ENABLED = os.getenv("FEISHU_ENABLED", "true").lower() == "true"
+FEISHU_APP_ID = os.getenv("FEISHU_APP_ID", "")
+FEISHU_APP_SECRET = os.getenv("FEISHU_APP_SECRET", "")
+FEISHU_APP_TOKEN = os.getenv("FEISHU_APP_TOKEN", "")
 
 # 平台到飞书表ID的映射
 PLATFORM_TABLE_MAP = {
     "xhs": "tblWwZpjhpUowxQ6",
     "dy": "tbl2ofGnYLyrKNtn",
+    "tieba": "tbl5YzjVKkSIrg4Z",
     "bili": "tblTrWXPa3ZNexvN",
 }
 
