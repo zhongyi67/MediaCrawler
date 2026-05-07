@@ -129,8 +129,10 @@ STOP_WORDS_FILE = "./docs/hit_stopwords.txt"
 # Chinese font file path
 FONT_PATH = "./docs/STZHONGS.TTF"
 
-# Crawl interval
+# Crawl interval (will be randomized within [CRAWLER_MIN_SLEEP_SEC, CRAWLER_MAX_SLEEP_SEC])
 CRAWLER_MAX_SLEEP_SEC = 2
+# 随机延时下限（秒），爬取每条/每页之间的最小等待时间
+CRAWLER_MIN_SLEEP_SEC = 1
 
 # 是否禁用 SSL 证书验证。仅在使用企业代理、Burp Suite、mitmproxy 等会注入自签名证书的中间人代理时设为 True。
 # 警告：禁用 SSL 验证将使所有流量暴露于中间人攻击风险，请勿在生产环境中开启。
@@ -152,7 +154,14 @@ PLATFORM_TABLE_MAP = {
 
 # ==================== 意向筛选配置 ====================
 ENABLE_INTENT_FILTER = True
-INTENT_KEYWORDS = ["借钱", "贷款", "急用", "周转", "哪里能借", "逾期", "利息多少", "无视征信", "口子", "怎么办理", "需要多少钱"]
+# 借款意向关键词（模糊匹配，包含即命中）
+INTENT_KEYWORDS = ["个贷", "个人借款", "私人借贷", "借钱", "贷款", "急用", "周转",
+                   "哪里能借", "逾期", "利息", "口子", "怎么办理", "需要多少钱",
+                   "资金周转", "短期借款", "应急"]
+
+# 筛选规则
+INTENT_FILTER_REGION = "广东"  # 目标地区
+INTENT_FILTER_HOURS = 10       # 评论时间在 N 小时内
 
 from .bilibili_config import *
 from .xhs_config import *

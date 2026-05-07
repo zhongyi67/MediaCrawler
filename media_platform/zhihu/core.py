@@ -21,7 +21,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import os
-# import random  # Removed as we now use fixed config.CRAWLER_MAX_SLEEP_SEC intervals
+import random  # Re-added for random delay intervals
 from asyncio import Task
 from typing import Dict, List, Optional, Tuple, cast
 
@@ -126,7 +126,7 @@ class ZhihuCrawler(AbstractCrawler):
             await self.context_page.goto(
                 f"{self.index_url}/search?q=python&search_source=Guess&utm_content=search_hot&type=content"
             )
-            await asyncio.sleep(5)
+            await asyncio.sleep(random.uniform(3, 7))
             await self.zhihu_client.update_cookies(
                 browser_context=self.browser_context,
                 urls=self.cookie_urls,
@@ -185,9 +185,9 @@ class ZhihuCrawler(AbstractCrawler):
                         utils.logger.info("No more content!")
                         break
 
-                    # Sleep after page navigation
-                    await asyncio.sleep(config.CRAWLER_MAX_SLEEP_SEC)
-                    utils.logger.info(f"[ZhihuCrawler.search] Sleeping for {config.CRAWLER_MAX_SLEEP_SEC} seconds after page {page-1}")
+                    # Sleep after page navigation (randomized)
+                    await asyncio.sleep(random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC))
+                    utils.logger.info(f"[ZhihuCrawler.search] Sleep random after page {page-1}")
 
                     page += 1
                     for content in content_list:
@@ -239,13 +239,14 @@ class ZhihuCrawler(AbstractCrawler):
                 f"[ZhihuCrawler.get_comments] Begin get note id comments {content_item.content_id}"
             )
 
-            # Sleep before fetching comments
-            await asyncio.sleep(config.CRAWLER_MAX_SLEEP_SEC)
-            utils.logger.info(f"[ZhihuCrawler.get_comments] Sleeping for {config.CRAWLER_MAX_SLEEP_SEC} seconds before fetching comments for content {content_item.content_id}")
+            # Sleep before fetching comments (randomized)
+            crawl_interval = random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC)
+            await asyncio.sleep(crawl_interval)
+            utils.logger.info(f"[ZhihuCrawler.get_comments] Sleep random before comments for content {content_item.content_id}")
 
             await self.zhihu_client.get_note_all_comments(
                 content=content_item,
-                crawl_interval=config.CRAWLER_MAX_SLEEP_SEC,
+                crawl_interval=crawl_interval,
                 callback=zhihu_store.batch_update_zhihu_note_comments,
             )
 
@@ -283,7 +284,7 @@ class ZhihuCrawler(AbstractCrawler):
             # Get all anwser information of the creator
             all_content_list = await self.zhihu_client.get_all_anwser_by_creator(
                 creator=createor_info,
-                crawl_interval=config.CRAWLER_MAX_SLEEP_SEC,
+                crawl_interval=random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC),
                 callback=zhihu_store.batch_update_zhihu_contents,
             )
 
@@ -330,9 +331,9 @@ class ZhihuCrawler(AbstractCrawler):
                 )
                 result = await self.zhihu_client.get_answer_info(question_id, answer_id)
 
-                # Sleep after fetching answer details
-                await asyncio.sleep(config.CRAWLER_MAX_SLEEP_SEC)
-                utils.logger.info(f"[ZhihuCrawler.get_note_detail] Sleeping for {config.CRAWLER_MAX_SLEEP_SEC} seconds after fetching answer details {answer_id}")
+                # Sleep after fetching answer details (randomized)
+                await asyncio.sleep(random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC))
+                utils.logger.info(f"[ZhihuCrawler.get_note_detail] Sleep random after fetching answer details {answer_id}")
 
                 return result
 
@@ -343,9 +344,9 @@ class ZhihuCrawler(AbstractCrawler):
                 )
                 result = await self.zhihu_client.get_article_info(article_id)
 
-                # Sleep after fetching article details
-                await asyncio.sleep(config.CRAWLER_MAX_SLEEP_SEC)
-                utils.logger.info(f"[ZhihuCrawler.get_note_detail] Sleeping for {config.CRAWLER_MAX_SLEEP_SEC} seconds after fetching article details {article_id}")
+                # Sleep after fetching article details (randomized)
+                await asyncio.sleep(random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC))
+                utils.logger.info(f"[ZhihuCrawler.get_note_detail] Sleep random after fetching article details {article_id}")
 
                 return result
 
@@ -356,9 +357,9 @@ class ZhihuCrawler(AbstractCrawler):
                 )
                 result = await self.zhihu_client.get_video_info(video_id)
 
-                # Sleep after fetching video details
-                await asyncio.sleep(config.CRAWLER_MAX_SLEEP_SEC)
-                utils.logger.info(f"[ZhihuCrawler.get_note_detail] Sleeping for {config.CRAWLER_MAX_SLEEP_SEC} seconds after fetching video details {video_id}")
+                # Sleep after fetching video details (randomized)
+                await asyncio.sleep(random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC))
+                utils.logger.info(f"[ZhihuCrawler.get_note_detail] Sleep random after fetching video details {video_id}")
 
                 return result
 

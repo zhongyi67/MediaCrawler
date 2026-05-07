@@ -25,6 +25,7 @@
 import asyncio
 import copy
 import json
+import random
 import re
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 from urllib.parse import parse_qs, unquote, urlencode
@@ -87,7 +88,7 @@ class WeiboClient(ProxyRefreshMixin):
             # issue: #771 Search API returns error 432, retry multiple times + update h5 cookies
             utils.logger.error(f"[WeiboClient.request] request {method}:{url} err code: {response.status_code} res:{response.text}")
             await self.playwright_page.goto(self._host)
-            await asyncio.sleep(2)
+            await asyncio.sleep(random.uniform(2, 4))
             await self.update_cookies(browser_context=self.playwright_page.context)
             raise DataFetchError(f"get response code error: {response.status_code}")
 

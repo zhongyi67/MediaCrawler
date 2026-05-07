@@ -175,9 +175,9 @@ class DouYinCrawler(AbstractCrawler):
                 # Batch get note comments for the current page
                 await self.batch_get_note_comments(page_aweme_list)
 
-                # Sleep after each page navigation
-                await asyncio.sleep(config.CRAWLER_MAX_SLEEP_SEC)
-                utils.logger.info(f"[DouYinCrawler.search] Sleeping for {config.CRAWLER_MAX_SLEEP_SEC} seconds after page {page-1}")
+                # Sleep after each page navigation (randomized)
+                await asyncio.sleep(random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC))
+                utils.logger.info(f"[DouYinCrawler.search] Sleep random after page {page-1}")
             utils.logger.info(f"[DouYinCrawler.search] keyword:{keyword}, aweme_list:{aweme_list}")
 
     async def get_specified_awemes(self):
@@ -220,9 +220,9 @@ class DouYinCrawler(AbstractCrawler):
         async with semaphore:
             try:
                 result = await self.dy_client.get_video_by_id(aweme_id)
-                # Sleep after fetching aweme detail
-                await asyncio.sleep(config.CRAWLER_MAX_SLEEP_SEC)
-                utils.logger.info(f"[DouYinCrawler.get_aweme_detail] Sleeping for {config.CRAWLER_MAX_SLEEP_SEC} seconds after fetching aweme {aweme_id}")
+                # Sleep after fetching aweme detail (randomized)
+                await asyncio.sleep(random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC))
+                utils.logger.info(f"[DouYinCrawler.get_aweme_detail] Sleep random after fetching aweme {aweme_id}")
                 return result
             except DataFetchError as ex:
                 utils.logger.error(f"[DouYinCrawler.get_aweme_detail] Get aweme detail error: {ex}")
@@ -251,8 +251,8 @@ class DouYinCrawler(AbstractCrawler):
         async with semaphore:
             try:
                 # Pass the list of keywords to the get_aweme_all_comments method
-                # Use fixed crawling interval
-                crawl_interval = config.CRAWLER_MAX_SLEEP_SEC
+                # Use randomized crawling interval
+                crawl_interval = random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC)
                 await self.dy_client.get_aweme_all_comments(
                     aweme_id=aweme_id,
                     crawl_interval=crawl_interval,
@@ -262,7 +262,7 @@ class DouYinCrawler(AbstractCrawler):
                 )
                 # Sleep after fetching comments
                 await asyncio.sleep(crawl_interval)
-                utils.logger.info(f"[DouYinCrawler.get_comments] Sleeping for {crawl_interval} seconds after fetching comments for aweme {aweme_id}")
+                utils.logger.info(f"[DouYinCrawler.get_comments] Sleeping for {crawl_interval:.2f}s after fetching comments for aweme {aweme_id}")
                 utils.logger.info(f"[DouYinCrawler.get_comments] aweme_id: {aweme_id} comments have all been obtained and filtered ...")
             except DataFetchError as e:
                 utils.logger.error(f"[DouYinCrawler.get_comments] aweme_id: {aweme_id} get comments failed, error: {e}")
@@ -439,7 +439,7 @@ class DouYinCrawler(AbstractCrawler):
             if not url:
                 continue
             content = await self.dy_client.get_aweme_media(url)
-            await asyncio.sleep(random.random())
+            await asyncio.sleep(random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC))
             if content is None:
                 continue
             extension_file_name = f"{picNum:>03d}.jpeg"
@@ -463,7 +463,7 @@ class DouYinCrawler(AbstractCrawler):
         if not video_download_url:
             return
         content = await self.dy_client.get_aweme_media(video_download_url)
-        await asyncio.sleep(random.random())
+        await asyncio.sleep(random.uniform(config.CRAWLER_MIN_SLEEP_SEC, config.CRAWLER_MAX_SLEEP_SEC))
         if content is None:
             return
         extension_file_name = f"video.mp4"
