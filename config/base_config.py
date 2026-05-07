@@ -136,6 +136,24 @@ CRAWLER_MAX_SLEEP_SEC = 2
 # 警告：禁用 SSL 验证将使所有流量暴露于中间人攻击风险，请勿在生产环境中开启。
 DISABLE_SSL_VERIFY = False
 
+# ==================== 飞书输出配置 ====================
+# 飞书相关配置从环境变量读取，不需要写在配置文件里
+FEISHU_ENABLED = True
+FEISHU_APP_ID = "cli_a957745288229cb3"
+FEISHU_APP_SECRET = "sWXQmWm1vv3HoiZk4kRURcEeqTBPBqes"
+FEISHU_APP_TOKEN = "JXvwbEeuJakLvqs0f1IconpJnKx"
+
+# 平台到飞书表ID的映射
+PLATFORM_TABLE_MAP = {
+    "xhs": "tblWwZpjhpUowxQ6",
+    "dy": "tbl2ofGnYLyrKNtn",
+    "bili": "tblTrWXPa3ZNexvN",
+}
+
+# ==================== 意向筛选配置 ====================
+ENABLE_INTENT_FILTER = True
+INTENT_KEYWORDS = ["借钱", "贷款", "急用", "周转", "哪里能借", "逾期", "利息多少", "无视征信", "口子", "怎么办理", "需要多少钱"]
+
 from .bilibili_config import *
 from .xhs_config import *
 from .dy_config import *

@@ -28,6 +28,7 @@ from var import source_keyword_var
 
 from .xhs_store_media import *
 from ._store_impl import *
+from store.feishu_store import FeishuStore
 
 
 class XhsStoreFactory:
@@ -40,13 +41,14 @@ class XhsStoreFactory:
         "sqlite": XhsSqliteStoreImplement,
         "mongodb": XhsMongoStoreImplement,
         "excel": XhsExcelStoreImplement,
+        "feishu": lambda: FeishuStore(platform="xhs"),
     }
 
     @staticmethod
     def create_store() -> AbstractStore:
         store_class = XhsStoreFactory.STORES.get(config.SAVE_DATA_OPTION)
         if not store_class:
-            raise ValueError("[XhsStoreFactory.create_store] Invalid save option only supported csv or db or json or sqlite or mongodb or excel ...")
+            raise ValueError("[XhsStoreFactory.create_store] Invalid save option only supported csv or db or json or sqlite or mongodb or excel or feishu ...")
         return store_class()
 
 
