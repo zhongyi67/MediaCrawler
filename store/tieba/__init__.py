@@ -25,6 +25,7 @@ from model.m_baidu_tieba import TiebaComment, TiebaCreator, TiebaNote
 from var import source_keyword_var
 
 from ._store_impl import *
+from store.feishu_store import FeishuStore
 
 
 class TieBaStoreFactory:
@@ -37,6 +38,7 @@ class TieBaStoreFactory:
         "sqlite": TieBaSqliteStoreImplement,
         "mongodb": TieBaMongoStoreImplement,
         "excel": TieBaExcelStoreImplement,
+        "feishu": lambda: FeishuStore(platform="tieba"),
     }
 
     @staticmethod
@@ -44,7 +46,9 @@ class TieBaStoreFactory:
         store_class = TieBaStoreFactory.STORES.get(config.SAVE_DATA_OPTION)
         if not store_class:
             raise ValueError(
-                "[TieBaStoreFactory.create_store] Invalid save option only supported csv or db or json or sqlite or mongodb or excel ...")
+                "[TieBaStoreFactory.create_store] Invalid save option only supported csv or db or json or sqlite or mongodb or excel or feishu ...")
+        if callable(store_class):
+            return store_class()
         return store_class()
 
 
