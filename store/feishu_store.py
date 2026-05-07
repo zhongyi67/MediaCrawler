@@ -239,38 +239,33 @@ class FeishuStore(AbstractStore):
     def _build_content_fields(self, content_item: Dict) -> Dict:
         """
         构建帖子/笔记的飞书记录字段
-        通用字段映射，不同平台的关键字段会略有不同
+        匹配当前飞书表结构：帖子地址、帖子标题、评论人ID、评论昵称、评论内容、评论人地区、评论时间、所属关键词、采集时间、采集批次、意向标签
         """
+        desc_content = content_item.get("desc") or content_item.get("title") or ""
         fields = {
             "帖子地址": content_item.get("note_url") or content_item.get("aweme_url") or content_item.get("video_url", ""),
-            "帖子标题": content_item.get("title") or content_item.get("desc", "")[:255],
-            "作者昵称": content_item.get("nickname", ""),
-            "作者ID": content_item.get("user_id", ""),
-            "点赞数": str(content_item.get("liked_count", "0")),
-            "收藏数": str(content_item.get("collected_count", "0")),
-            "评论数": str(content_item.get("comment_count", "0")),
-            "分享数": str(content_item.get("share_count", "0")),
-            "IP属地": content_item.get("ip_location", ""),
+            "帖子标题": content_item.get("title") or content_item.get("display_title") or desc_content[:255],
+            "评论人ID": content_item.get("user_id", ""),
+            "评论昵称": content_item.get("nickname", ""),
+            "评论内容": desc_content,
+            "评论人地区": content_item.get("ip_location", ""),
+            "评论时间": self.timestamp_to_int(content_item.get("create_time") or content_item.get("time", 0)),
             "所属关键词": self.extract_keyword(content_item),
             "采集时间": int(time.time()),
             "采集批次": self.get_batch_id(),
+            "意向标签": "是" if check_intent(desc_content) else "否",
         }
-
-        # 如果有发布时间，也写入
-        create_time = content_item.get("create_time") or content_item.get("time")
-        if create_time:
-            fields["发布时间"] = self.timestamp_to_int(create_time)
-
         return fields
 
     def _build_comment_fields(self, comment_item: Dict) -> Dict:
         """
         构建评论的飞书记录字段
+        匹配当前飞书表结构
         """
         content = comment_item.get("content", "")
         fields = {
-            "帖子地址": "",
-            "帖子标题": "",
+            "帖子地址": comment_item.get("note_url", ""),
+            "帖子标题": comment_item.get("note_title", ""),
             "评论人ID": comment_item.get("user_id", ""),
             "评论昵称": comment_item.get("nickname", ""),
             "评论内容": content,
@@ -281,7 +276,6 @@ class FeishuStore(AbstractStore):
             "采集批次": self.get_batch_id(),
             "意向标签": "是" if check_intent(content) else "否",
         }
-
         return fields
 
     async def store_content(self, content_item: Dict):
